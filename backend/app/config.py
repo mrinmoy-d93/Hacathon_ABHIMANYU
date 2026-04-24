@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     # Colab fallback (secondary aging provider)
     colab_aging_url: str = ""
 
+    # Replicate (optional aging provider — surfaced in /health)
+    replicate_api_token: str = ""
+
     # OpenAI (primary LLM)
     openai_api_key: str = ""
     openai_model: str = "gpt-4o"
@@ -46,6 +49,17 @@ class Settings(BaseSettings):
     jwt_secret: str = "change-me-in-production"
     jwt_algorithm: str = "HS256"
     jwt_expiry_hours: int = 24
+
+    # Demo mode: fixed OTP 123456, SMS skipped. See docs/DEMO_MODE.md.
+    demo_mode: bool = False
+    demo_otp: str = "123456"
+
+    # Current AI model version surfaced in admin settings (FRS §6.6 Tab 4).
+    current_model_version: str = "v1.0"
+
+    # Rate limiting (requests per minute). Applied by slowapi in main.py.
+    rate_limit_anon: str = "60/minute"
+    rate_limit_auth: str = "300/minute"
 
     cors_origins: str = "http://localhost:3000"
 
