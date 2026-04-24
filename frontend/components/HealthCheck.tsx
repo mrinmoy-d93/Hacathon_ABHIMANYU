@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { Badge } from "@/components/ui/badge";
 import { getHealth } from "@/lib/api";
 
 type Status = "checking" | "ok" | "error";
@@ -35,18 +36,18 @@ export function HealthCheck() {
     };
   }, []);
 
-  const badge = {
-    checking: { text: "Checking…", className: "bg-slate-700 text-slate-200" },
-    ok: { text: "Online", className: "bg-khojo-success text-white" },
-    error: { text: "Offline", className: "bg-khojo-danger text-white" },
+  const label = {
+    checking: "Checking…",
+    ok: "Online",
+    error: "Offline",
   }[status];
+
+  const variant = status === "ok" ? "success" : status === "error" ? "destructive" : "secondary";
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${badge.className}`}>
-        {badge.text}
-      </span>
-      <span className="text-sm text-slate-400">{detail || "Pinging /health…"}</span>
+      <Badge variant={variant}>{label}</Badge>
+      <span className="text-sm text-muted-foreground">{detail || "Pinging /health…"}</span>
     </div>
   );
 }

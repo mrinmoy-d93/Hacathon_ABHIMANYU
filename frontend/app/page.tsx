@@ -1,77 +1,106 @@
 import Link from "next/link";
+import { ArrowRight, Sparkles, Users, Shield, FileSearch } from "lucide-react";
 
+import { AppShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HealthCheck } from "@/components/HealthCheck";
 
 export default function LandingPage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-12 px-6 py-16">
-      <header className="flex flex-col gap-4">
-        <p className="text-sm uppercase tracking-widest text-khojo-accent">
+    <AppShell>
+      <section className="flex flex-col gap-5 py-6">
+        <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-accent">
+          <Sparkles className="h-4 w-4" aria-hidden="true" />
           Amnex Hackathon 2026 · UC34 · Social Impact
         </p>
-        <h1 className="text-5xl font-bold tracking-tight">
-          KHOJO — AI Missing Person Finder
+        <h1 className="text-3xl font-bold tracking-tight text-primary sm:text-5xl">
+          KHOJO — Find the missing, faster.
         </h1>
-        <p className="max-w-2xl text-lg text-slate-300">
-          Artificial Intelligence (AI) that predicts how a missing person appears today
-          and matches that prediction against a growing database of sighted individuals.
+        <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
+          Artificial Intelligence (AI) that predicts how a missing person looks today and matches
+          that prediction against a growing database of sightings — verified by trained officers
+          before any family is informed.
         </p>
-        <p className="text-sm italic text-slate-400">
+        <p className="text-sm italic text-muted-foreground">
           &ldquo;AI suggests, the human decides.&rdquo;
         </p>
-      </header>
+        <div className="flex flex-wrap gap-3 pt-2">
+          <Button asChild size="lg">
+            <Link href="/register">
+              Get started <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="lg">
+            <Link href="#roles">Explore roles</Link>
+          </Button>
+        </div>
+      </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <NavCard
+      <section id="roles" className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <RoleCard
+          icon={<Users className="h-5 w-5" />}
           href="/register"
-          title="Register"
-          description="Create an account — community member, field worker, or administrator."
+          title="Community Member"
+          description="Register a missing person case, upload photos, track the search in real time."
         />
-        <NavCard
-          href="/cases"
-          title="Cases"
-          description="Register a missing person case and view AI-generated match results."
-        />
-        <NavCard
-          href="/field-worker"
+        <RoleCard
+          icon={<FileSearch className="h-5 w-5" />}
+          href="/register"
           title="Field Worker"
-          description="Verify matches in the field and submit Confirm / Not-a-Match feedback."
+          description="Verify AI-generated matches in person. Every Confirm or Not-a-Match improves the model."
         />
-        <NavCard
-          href="/admin"
-          title="Admin Console"
-          description="Overview, case management, field workers, AI settings, audit log."
+        <RoleCard
+          icon={<Shield className="h-5 w-5" />}
+          href="/register"
+          title="Administrator"
+          description="Oversee cases, tune AI thresholds with zero code, audit every decision."
         />
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-        <h2 className="mb-3 text-xl font-semibold">Backend connectivity</h2>
-        <HealthCheck />
+      <section className="mt-10">
+        <Card>
+          <CardHeader>
+            <CardTitle>Backend connectivity</CardTitle>
+            <CardDescription>Live status from the KHOJO API.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <HealthCheck />
+          </CardContent>
+        </Card>
       </section>
 
-      <footer className="pt-8 text-sm text-slate-500">
+      <footer className="mt-10 text-center text-sm text-muted-foreground">
         FRS v1.1 · Team KHOJO · 24 April 2026
       </footer>
-    </main>
+    </AppShell>
   );
 }
 
-function NavCard({
+function RoleCard({
+  icon,
   href,
   title,
   description,
 }: {
-  href: "/register" | "/cases" | "/field-worker" | "/admin";
+  icon: React.ReactNode;
+  href: string;
   title: string;
   description: string;
 }) {
   return (
-    <Link
-      href={href}
-      className="group rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition hover:border-khojo-accent hover:bg-slate-900"
-    >
-      <h3 className="mb-1 text-lg font-semibold group-hover:text-khojo-accent">{title}</h3>
-      <p className="text-sm text-slate-400">{description}</p>
+    <Link href={href} className="group">
+      <Card className="h-full transition-colors group-hover:border-accent">
+        <CardHeader>
+          <div className="flex items-center gap-2 text-accent">
+            {icon}
+            <CardTitle className="text-lg">{title}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{description}</p>
+        </CardContent>
+      </Card>
     </Link>
   );
 }
