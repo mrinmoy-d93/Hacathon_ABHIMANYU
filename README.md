@@ -126,5 +126,5 @@ Built for the Amnex Hackathon 2026. All rights reserved by the team pending hack
 
 ---
 
-*"Har saal lakhon ghar intezaar karte hain. KHOJO unki madad karne ke liye hai."*
-*(Every year, lakhs of homes wait. KHOJO is here to help them.)*
+*"Har saal lakhon ghar me intezaar karte hain. KHOJO unki madad karne ke liye hai."*
+*(Every year, lakhs of people wait at home. KHOJO is here to help them.)*
