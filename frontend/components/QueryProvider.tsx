@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useEffect, useState } from "react";
 
 import { useAuthStore } from "@/lib/authStore";
@@ -31,5 +32,12 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
     void useAuthStore.persist.rehydrate();
   }, []);
 
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      {children}
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+      )}
+    </QueryClientProvider>
+  );
 }
