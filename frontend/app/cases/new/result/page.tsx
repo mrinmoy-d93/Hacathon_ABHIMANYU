@@ -1,0 +1,261 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import {
+  AlertCircle,
+  ArrowRight,
+  Check,
+  Copy,
+  FileSearch,
+  Info,
+  Loader2,
+} from "lucide-react";
+
+import { AppShell } from "@/components/AppShell";
+import { Acronym, AcronymProvider } from "@/components/Acronym";
+import { AuthHydrationGuard } from "@/components/AuthHydrationGuard";
+import { StepIndicator } from "@/components/StepIndicator";
+import { AIBadge } from "@/components/AIBadge";
+import { ConfidenceBar } from "@/components/ConfidenceBar";
+import { PhotoCompare } from "@/components/PhotoCompare";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/toast";
+import { useCase, useCaseResult } from "@/lib/hooks/useCases";
+import type { MatchTier } from "@/lib/types";
+
+export default function ResultPage() {
+  return (
+    <AppShell>
+      <AcronymProvider>
+        <AuthHydrationGuard requiredRole={["family", "field_worker", "admin"]}>
+          <Suspense
+            fallback={
+              <div className="flex justify-center py-12 text-muted-foreground">
+                <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
+              </div>
+            }
+          >
+            <ResultInner />
+          </Suspense>
+        </AuthHydrationGuard>
+      </AcronymProvider>
+    </AppShell>
+  );
+}
+
+function ResultInner() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const caseId = params.get("case_id") ?? "";
+  const result = useCaseResult(caseId || undefined);
+  const caseDetail = useCase(caseId || undefined);
+
+  if (!caseId) {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>Missing case reference</AlertTitle>
+        <AlertDescription>Please start a new case from the beginning.</AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (result.isLoading || !result.data) {
+    return <ResultSkeleton />;
+  }
+
+  if (result.data.status === "processing" || result.data.status === "unknown") {
+    // Someone navigated here before completion — bounce back to processing.
+    router.replace(`/cases/new/processing?case_id=${encodeURIComponent(caseId)}`);
+    return <ResultSkeleton />;
+  }
+
+  const bestMatch = result.data.matches[0];
+  const scoreFraction =
+    result.data.confidence_score ?? (bestMatch ? bestMatch.confidence_score : 0);
+  const tier: MatchTier = bestMatch?.tier ?? tierForScore(scoreFraction);
+  const detail = caseDetail.data;
+
+  const originalPhotos = detail?.photos.filter((p) => !p.is_predicted_aged) ?? [];
+  const originalCaption = originalPhotos.length
+    ? "Original " +
+      (originalPhotos.length === 1
+        ? `(age ${originalPhotos[0].age_at_photo})`
+        : `(ages ${originalPhotos.map((p) => p.age_at_photo).join(", ")})`)
+    : "Original";
+
+  return (
+    <div className="mx-auto max-w-3xl">
+      <StepIndicator step={4} />
+
+      <div className="mb-6 flex flex-col gap-4">
+        <CaseIdCard caseId={caseId} />
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-primary">Match preview</CardTitle>
+            <CardDescription>
+              Side-by-side comparison of the original photos and the <Acronym short="AI" />
+              -predicted present-day appearance.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PhotoCompare
+              left={{
+                src: originalPhotos[0]?.supabase_url ?? null,
+                label: "Original photos",
+                caption: originalCaption,
+              }}
+              right={{
+                src: result.data.aged_photo_url ?? bestMatch?.candidate_photo_url ?? null,
+                label: `Predicted${
+                  detail?.predicted_current_age
+                    ? ` at age ${detail.predicted_current_age}`
+                    : ""
+                }`,
+                caption: "AI-aged",
+              }}
+            />
+
+            <div className="mt-6 flex flex-col gap-3">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Confidence
+              </h3>
+              <ConfidenceBar score={scoreFraction} tier={tier} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <OutcomeAlert tier={tier} />
+
+        {result.data.summary && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-primary">
+                <Info className="h-5 w-5" aria-hidden="true" />
+                Case summary
+              </CardTitle>
+              <CardDescription>
+                Generated by GPT-4o via the optional <Acronym short="API" /> integration.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+                {result.data.summary}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        <AIBadge />
+
+        <div className="flex flex-wrap gap-3">
+          <Button asChild size="lg">
+            <Link href={`/cases/${encodeURIComponent(caseId)}`}>
+              View case status <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button variant="outline" size="lg" onClick={() => router.push("/cases")}>
+            Back to my cases
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OutcomeAlert({ tier }: { tier: MatchTier }) {
+  if (tier === "high") {
+    return (
+      <Alert variant="success">
+        <Check className="h-4 w-4" />
+        <AlertTitle>Strong potential match found</AlertTitle>
+        <AlertDescription>
+          A field officer has been alerted and will verify in person. We&apos;ll notify you as
+          soon as they confirm or rule out the match.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+  if (tier === "medium") {
+    return (
+      <Alert variant="warning">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Possible match under review</AlertTitle>
+        <AlertDescription>
+          A trained reviewer is looking at this result. We&apos;ll notify you when it&apos;s
+          verified — typically within a few hours.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+  return (
+    <Alert variant="info">
+      <FileSearch className="h-4 w-4" />
+      <AlertTitle>No confident match found yet</AlertTitle>
+      <AlertDescription>
+        Your case stays active — our system keeps searching automatically as new sighting photos
+        are registered.
+      </AlertDescription>
+    </Alert>
+  );
+}
+
+function CaseIdCard({ caseId }: { caseId: string }) {
+  const [copied, setCopied] = useState(false);
+  const onCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(caseId);
+      setCopied(true);
+      toast.success("Case reference copied to clipboard.");
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Could not copy to clipboard.");
+    }
+  };
+  return (
+    <Card>
+      <CardContent className="flex flex-wrap items-center justify-between gap-2 p-4 sm:p-5">
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+            Case reference
+          </p>
+          <p className="truncate font-mono text-lg font-semibold text-primary">{caseId}</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={onCopy}>
+          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+          {copied ? "Copied" : "Copy"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ResultSkeleton() {
+  return (
+    <div className="mx-auto max-w-3xl">
+      <StepIndicator step={4} />
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-72 w-full" />
+        <Skeleton className="h-16 w-full" />
+      </div>
+    </div>
+  );
+}
+
+function tierForScore(score: number): MatchTier {
+  if (score >= 0.8) return "high";
+  if (score >= 0.6) return "medium";
+  return "low";
+}
