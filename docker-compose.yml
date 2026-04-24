@@ -1,0 +1,49 @@
+services:
+  backend:
+    build: ./backend
+    container_name: khojo-backend
+    ports:
+      - "8000:8000"
+    environment:
+      ENVIRONMENT: development
+      PORT: "8000"
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/khojo}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_KEY: ${SUPABASE_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      REPLICATE_API_TOKEN: ${REPLICATE_API_TOKEN:-}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-do-not-use-in-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  frontend:
+    image: node:20-alpine
+    container_name: khojo-frontend
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: khojo-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: khojo
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
