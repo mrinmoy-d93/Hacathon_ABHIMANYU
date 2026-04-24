@@ -11,11 +11,17 @@ class Settings(BaseSettings):
     environment: str = "development"
 
     database_url: str = ""
+
     supabase_url: str = ""
-    supabase_key: str = ""
+    supabase_anon_key: str = ""
+    supabase_service_key: str = ""
+    supabase_bucket_case_photos: str = "case-photos"
+    supabase_bucket_not_match_photos: str = "not-match-photos"
 
     openai_api_key: str = ""
     replicate_api_token: str = ""
+
+    audit_signing_secret: str = "dev-insecure-do-not-use-in-production"
 
     jwt_secret: str = "change-me-in-production"
     jwt_algorithm: str = "HS256"
