@@ -15,8 +15,15 @@ export function HealthCheck() {
     getHealth()
       .then((data) => {
         if (cancelled) return;
-        setStatus("ok");
-        setDetail(`${data.service ?? "backend"} v${data.version ?? "?"} · ${data.environment ?? ""}`);
+        setStatus(data.status === "ok" ? "ok" : "error");
+        const configured = Object.entries(data.providers)
+          .filter(([, enabled]) => enabled)
+          .map(([name]) => name);
+        setDetail(
+          `KHOJO API v${data.version} · db=${data.db ? "up" : "down"} · providers=${
+            configured.length ? configured.join(",") : "none"
+          }`
+        );
       })
       .catch((err: unknown) => {
         if (cancelled) return;
