@@ -1,55 +1,40 @@
-# Functional Requirements Specification (FRS)
+# KHOJO — Artificial Intelligence (AI) Powered Missing Person Finder with Facial Aging Technology
 
-## KHOJO — Artificial Intelligence (AI) Powered Missing Person Finder with Facial Aging Technology
+> **Functional Requirements Specification (FRS) — Version 1.1 (Detailed Edition)**
+> Amnex Hackathon 2026 | Use Case UC34 | Domain: Social Impact | Date: 24 April 2026
 
 ---
 
 | Field | Detail |
 |---|---|
-| **Project Name** | KHOJO |
-| **Hackathon** | Amnex Hackathon 2026 |
-| **Use Case Reference** | UC34 — Missing Person Finder |
-| **Domain** | Social Impact |
-| **Category** | General |
-| **Primary Modules** | Mobile Application, Application Programming Interface (API), Admin Console |
-| **Complexity** | High |
-| **Document Type** | Functional Requirements Specification (FRS) |
-| **Version** | 1.0 |
-| **Date** | 24 April 2026 |
-| **Status** | Final — Submitted |
-
-### Document Revision History
-
-| Version | Date | Author | Description |
-|---|---|---|---|
-| 0.1 | 22 April 2026 | Team KHOJO | Initial draft |
-| 0.2 | 23 April 2026 | Team KHOJO | Internal review and corrections |
-| 1.0 | 24 April 2026 | Team KHOJO | Final version for hackathon submission |
+| Project | KHOJO |
+| Hackathon | Amnex Hackathon 2026 |
+| Use Case | UC34 — Missing Person Finder |
+| Domain | Social Impact |
+| Primary Modules | Mobile Application, API, Admin Console |
+| Complexity | High |
+| Version | 1.1 (Detailed) |
+| Status | Final |
 
 ---
 
 ## Table of Contents
 
-1. Introduction
-2. Problem Statement
-3. Scope of the Solution
-4. Definitions, Acronyms, and Abbreviations
-5. System Overview
-6. Users and Roles (Actors)
-7. Functional Requirements
-8. User Flows
-9. Artificial Intelligence (AI) Pipeline — Technical Summary
-10. Non-Functional Requirements
-11. Technology Stack
-12. External Integrations and Data Sources
-13. Audit, Logging, and Compliance
-14. Administrator Controls
-15. Performance and Deployment
-16. Acceptance Criteria
-17. Assumptions and Dependencies
-18. Risks and Mitigations
-19. Future Enhancements
-20. Glossary
+1. [Introduction](#1-introduction)
+2. [Problem Statement](#2-problem-statement)
+3. [Scope of the Solution](#3-scope-of-the-solution)
+4. [System Architecture](#4-system-architecture)
+5. [Users and Roles](#5-users-and-roles)
+6. [Functional Requirements](#6-functional-requirements)
+7. [Non-Functional Requirements](#7-non-functional-requirements)
+8. [Technology Stack](#8-technology-stack)
+9. [API Endpoint Reference](#9-api-endpoint-reference)
+10. [Security Architecture](#10-security-architecture)
+11. [Continuous Learning — "Not a Match" Feedback Loop](#11-continuous-learning--not-a-match-feedback-loop)
+12. [Acceptance Criteria](#12-acceptance-criteria)
+13. [Risks and Mitigations](#13-risks-and-mitigations)
+14. [Future Enhancements](#14-future-enhancements)
+15. [Glossary](#15-glossary)
 
 ---
 
@@ -57,31 +42,43 @@
 
 ### 1.1 Purpose
 
-This Functional Requirements Specification (FRS) document describes the complete functional behaviour, user interactions, technical architecture, and acceptance criteria of **KHOJO** — an Artificial Intelligence (AI) powered mobile and web solution designed to locate missing persons through facial aging prediction and age-invariant face recognition.
+This Functional Requirements Specification (FRS) document describes the complete functional behaviour, user interactions, technical architecture, system design, and acceptance criteria of **KHOJO** — an Artificial Intelligence (AI) powered mobile and web solution designed to locate missing persons through facial aging prediction and age-invariant face recognition.
 
-The document is intended to serve as the authoritative reference for the development team, judges, reviewers, and future maintainers of the system.
+This version expands every section with architectural detail, data flows, component diagrams, and domain-specific implementation guidance.
 
 ### 1.2 Intended Audience
 
 - Hackathon judges and evaluation panel
-- Project developers and testers
-- Domain experts from law enforcement and non-governmental organisations
+- Project developers, testers, and architects
+- Domain experts from law enforcement and non-governmental organisations (NGOs)
 - Government officers responsible for missing person cases
-- Future contributors to the open-source repository
+- Future open-source contributors
 
 ### 1.3 Document Conventions
 
-- The terms "must", "shall", and "required" denote mandatory requirements.
-- The terms "should" and "recommended" denote preferred but non-mandatory requirements.
+- **"Must", "shall", and "required"** denote mandatory requirements.
+- **"Should" and "recommended"** denote preferred but non-mandatory requirements.
 - All technical acronyms are expanded at first occurrence in each section.
+- Requirement identifiers follow the pattern `FR-X.Y`, `NFR-N`, `AC-N`.
 
 ---
 
 ## 2. Problem Statement
 
-India records more than one hundred thousand (100,000+) missing person cases every year. A significant proportion of these are children who go missing at an early age and, when eventually found or sighted, are no longer recognisable because their facial features have changed considerably due to aging. Families, shelter homes, and law-enforcement officers lack a reliable tool to bridge this visual gap between the last known photograph and the present-day appearance of the missing individual.
+India records more than **100,000+ missing person cases every year**. A significant proportion are children who go missing at an early age and, when eventually found or sighted years later, are unrecognisable because their facial features have changed due to aging.
 
-**KHOJO** addresses this problem by applying Artificial Intelligence (AI) to predict how a missing person is likely to appear today, based on one or more older photographs, and by automatically matching this predicted face against a database of sighted and registered individuals.
+> **Core Challenge:** A ten-year-old child missing in 2009 would appear as a 27-year-old adult in 2026 — a face that no photograph in the case file resembles.
+
+KHOJO addresses this by applying AI to predict how a missing person is likely to appear today, based on older photographs, and by automatically matching this predicted face against a database of sighted individuals.
+
+### 2.1 Scale of the Problem — India Statistics
+
+| Metric | Figure | Source |
+|---|---|---|
+| Missing persons per year | 1,00,000+ | NCRB Annual Report |
+| Children as % of missing | ~45% | Missing Link Trust |
+| Cases solved within 1 year | ~30% | NCRB |
+| Average duration of search | 3–7 years | Field survey |
 
 ---
 
@@ -89,358 +86,393 @@ India records more than one hundred thousand (100,000+) missing person cases eve
 
 The solution is delivered as three tightly integrated components:
 
-1. **Mobile Application** — used by community members, family members of missing persons, and field workers.
-2. **Backend Application Programming Interface (API)** — the processing layer that performs face detection, embedding, aging, recognition, scoring, and alert routing.
-3. **Administrator Console** — a role-based interface used by government officers and police to manage cases, field workers, thresholds, and audit logs.
+1. **Mobile Application** — used by community members, family members, and field workers (React Native, Android + iOS).
+2. **Backend API (Application Programming Interface)** — the AI processing layer performing face detection, embedding, aging, recognition, scoring, and alert routing (Python FastAPI).
+3. **Administrator Console** — a role-based web interface for government officers and senior police (React web, embedded in mobile build).
 
 The scope includes end-to-end case registration, AI-driven age progression, match detection, human-in-the-loop verification, a "Not a Match" continuous-learning feedback loop, alerting, and tamper-evident auditing.
 
 ---
 
-## 4. Definitions, Acronyms, and Abbreviations
+## 4. System Architecture
 
-| Term | Expansion / Meaning |
+### 4.1 High-Level Architecture
+
+> **Architecture Principle:** All computer vision processing runs locally on-premise. No biometric data is ever transmitted to external services. Only optional text summaries use an external API (OpenAI GPT-4o).
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      PRESENTATION LAYER                         │
+│   React Native Mobile App (iOS + Android)  │  React Web Admin   │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │ HTTPS / TLS 1.3
+┌─────────────────────────────▼───────────────────────────────────┐
+│                        API GATEWAY                              │
+│     FastAPI · JWT Auth · Rate Limiter · Circuit Breaker         │
+└──────┬──────────────────────────────────────────────────────────┘
+       │
+┌──────▼────────────────────────────────────────────────────────────────┐
+│              AI PROCESSING ENGINE  (fully local)                      │
+│                                                                       │
+│  InsightFace   →   ArcFace    →   Aging        →   SAM/HRFAE GAN     │
+│  (Detection +      (Embed-        Trajectory       (Age Progression)  │
+│   Landmarks)        ding)         Module                              │
+│                                                                       │
+│  ArcFace Cosine  →  Confidence  →  Alert Router                      │
+│  Similarity          Scorer                                           │
+│  (Recognition)                                                        │
+└──────┬────────────────────────────────────────────────────────────────┘
+       │
+┌──────▼──────────────────────────────────────────────────────────────┐
+│                         DATA LAYER                                  │
+│  PostgreSQL + pgvector  │  Redis  │  MinIO (S3-compatible)          │
+│  (Cases, Audit Log,     │  (Queue,│  (Images, encrypted AES-256)    │
+│   Embeddings)           │  Cache) │                                 │
+└──────┬──────────────────────────────────────────────────────────────┘
+       │
+┌──────▼──────────────────────────────────────────────────────────────┐
+│                    OPTIONAL EXTERNAL SERVICES                       │
+│   OpenAI GPT-4o API (Case Summaries + Alert Messages only)          │
+│   GeoPy / Nominatim (Geocoding + Geo-clustering)                    │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.2 Component Architecture
+
+| Component | Technology | Responsibility | Scalability |
+|---|---|---|---|
+| Mobile App | React Native 0.73+ (Expo) | All user-facing flows; camera; OTP auth | Horizontal — stateless clients |
+| API Server | Python 3.11 + FastAPI | Business logic, AI pipeline orchestration | Docker replicas behind Nginx |
+| Task Queue | Celery 5 + Redis 7 | Async face-aging jobs (GPU-bound) | Multiple Celery workers per GPU |
+| Face Detection | InsightFace 0.7 (RetinaFace) | Detect faces, extract 68 landmarks | CPU or GPU |
+| Face Embedding | ArcFace (ResNet-50, MS1MV3) | 512-d cosine-space face fingerprint | GPU batch inference |
+| Age Progression | SAM / HRFAE GAN | Generate aged photograph | Single GPU worker |
+| Face DB | pgvector (PostgreSQL ext.) | Vector index for ANN similarity search | Index sharding by state |
+| Geocoding | GeoPy + Nominatim (local) | Resolve addresses to lat/lon; clustering | Cached results in Redis |
+| Audit Store | PostgreSQL (append-only) | Tamper-evident decision log | Partitioned by month |
+| Object Storage | MinIO (S3-compatible) | Original + aged photos, immutable | Multi-node replication |
+| Admin Console | React 18 (embedded) | Admin five-tab interface | Served via FastAPI static |
+
+### 4.3 AI Pipeline — Detailed Data Flow
+
+| Step | Operation | Detail | Technology | Output |
+|---|---|---|---|---|
+| 1 | Face Detection | RetinaFace locates primary face bounding box. 68 facial landmark key points (eyes, nose, mouth, jaw, brows) extracted and normalised to 112×112 px. | InsightFace / RetinaFace | Bounding box + 68-point landmark map |
+| 2 | Face Embedding | Aligned face patch fed through ArcFace (ResNet-50, MS1MV3). Output: 512-dimensional L2-normalised vector — the "face fingerprint", age-invariant by design. | ArcFace / InsightFace | 512-d embedding vector |
+| 3 | Aging Trajectory | For each photo (min 2), embedding tagged with known age. Linear interpolation across embedding space yields per-dimension aging rate vector **∆v**. | Custom Python module | Per-dimension aging rate ∆v |
+| 4 | Age Progression | ∆v primes the GAN's latent code. SAM maps input image to target age using StyleGAN2 latent space. HRFAE used as high-resolution fallback. | SAM / HRFAE GAN (PyTorch 2.x) | Aged RGB image at predicted age |
+| 5 | Target Embedding | ArcFace extracts fresh 512-d embedding from the GAN-generated aged image. | ArcFace | Target embedding `e_target` |
+| 6 | DB Search | `e_target` compared against all sighting embeddings using cosine similarity. pgvector IVFFlat index returns top-K candidates. | pgvector (PostgreSQL) | Ranked list of `(candidate_id, score)` |
+| 7 | Confidence Score | `cosine_similarity(e_target, e_candidate)` mapped to [0.0, 1.0] via sigmoid calibration. Tier routing: ≥0.80 → High, 0.60–0.80 → Medium, <0.60 → Low. | Python + NumPy | Score in [0,1] + tier label |
+| 8 | Alert Routing | High → push notification to field worker. Medium → human review queue. Low → inconclusive. | FastAPI + Firebase FCM | Push alert or review queue entry |
+| 9 | Summary (optional) | GPT-4o called with structured case data + system prompt version ID. Output: investigator summary + community alert text. | OpenAI GPT-4o API | Plain-language summary strings |
+| 10 | Audit Log | All inputs, outputs, model versions, confidence scores, timestamps written atomically with SHA-256 chained checksum. | PostgreSQL (append-only) | Tamper-evident audit record |
+
+### 4.4 Database Schema — Core Tables
+
+| Table | Key Columns | Type | Notes |
+|---|---|---|---|
+| `cases` | id, khj_id, name, dob, missing_year, last_location, status | Core | `khj_id` = `KHJ-YYYY-XXXXX`. `status` ∈ {active, review, matched, closed} |
+| `photos` | id, case_id, s3_key, age_at_capture, embedding (vector 512) | Core | pgvector column enables ANN search. Immutable after upload. |
+| `sightings` | id, reporter_id, location, photo_s3_key, embedding (vector 512), reported_at | Core | Uploaded by field workers; compared against case embeddings. |
+| `matches` | id, case_id, sighting_id, score, tier, status, reviewed_by | Workflow | `status` ∈ {pending, confirmed, rejected}. `reviewed_by` FK to users. |
+| `users` | id, name, phone_hash, role, zone, gov_id_hash, otp_secret | Auth | Passwords never stored. OTP via TOTP. gov_id hashed with bcrypt (cost 12). |
+| `audit_log` | id, ts, action, case_id, model_version, input_hash, output_hash, confidence, prev_checksum, checksum | Compliance | Append-only. `checksum = SHA-256(row_data \|\| prev_checksum)`. Chained. |
+| `model_versions` | id, name, deployed_at, val_accuracy, training_pool_size | AI Ops | Admin console reads this for display. Fine-tune increments version. |
+| `training_pool` | id, case_id, predicted_s3_key, actual_s3_key, error_vector (jsonb), created_at | Continuous Learning | Populated on "Not a Match" submissions. Fine-tune triggered at count = 50. |
+
+---
+
+## 5. Users and Roles
+
+| Actor | Description | Key Permissions |
+|---|---|---|
+| Community Member / Family | Ordinary citizen with a missing relative or witness to an unknown individual. | Register case, upload photos, view match results and status updates. |
+| Field Worker | NGO representative or police constable operating in the field. | Receive alerts, physically verify matches, upload sighting photos, submit Confirm / Not-a-Match feedback. |
+| Administrator | Government officer or senior police official. | All field-worker permissions + approve/reject cases, tune AI thresholds, manage field workers, export audit logs. |
+| System (AI, Automated) | Fully automated — no human involvement. | Execute AI pipeline, compute confidence, dispatch alerts, log audit entries, trigger fine-tuning. |
+
+---
+
+## 6. Functional Requirements
+
+### 6.1 Registration and Authentication
+
+| FR# | Requirement |
 |---|---|
-| AI | Artificial Intelligence |
-| ML | Machine Learning |
-| API | Application Programming Interface |
-| FRS | Functional Requirements Specification |
-| GAN | Generative Adversarial Network |
-| GPT-4o | OpenAI's multimodal Generative Pre-trained Transformer, version 4 Omni |
-| HRFAE | High-Resolution Face Age Editing — a published face-aging model |
-| SAM | Style-based Age Manipulation (a published face-aging model) |
-| ArcFace | A deep face-recognition model that produces angular-margin embeddings |
-| InsightFace | An open-source face analysis toolkit used for detection and landmarking |
-| PII | Personally Identifiable Information |
-| OTP | One-Time Password |
-| CSV | Comma-Separated Values |
-| NGO | Non-Governmental Organisation |
-| PoC | Proof of Concept |
+| FR-1.1 | The mobile application must allow every user to register using name, phone number, and location, and to select their role (Family Member, Community Member, Field Worker, or Administrator). |
+| FR-1.2 | Authentication must be performed through a One-Time Password (OTP) sent to the registered mobile number. Administrators must additionally authenticate using a police/government identification number (two-factor authentication, 2FA). |
+| FR-1.3 | The mobile application must confirm successful submission with a clear on-screen acknowledgement and a unique reference identifier in the format `KHJ-YYYY-XXXXX`. |
+| FR-1.4 | Input validation must reject malformed or out-of-range data (e.g., future years, invalid ages, unreadable images) with a plain-language error message. |
+| FR-1.5 | OTP codes must expire after five (5) minutes and must be rate-limited to three (3) requests per phone number per fifteen-minute window. |
+| FR-1.6 | Session tokens (JWT) must expire after twenty-four (24) hours. Refresh tokens are valid for thirty (30) days. On device loss, the user can revoke all active tokens via OTP re-authentication. |
 
----
+### 6.2 Missing Person Case Registration
 
-## 5. System Overview
+| FR# | Requirement |
+|---|---|
+| FR-2.1 | The user must be able to enter: missing person's full name, year of disappearance, age at disappearance, last known location (city/area), and relationship to the reporter. |
+| FR-2.2 | The system must automatically compute and display: **Predicted Present-Day Age = Age at Disappearance + (Current Year − Year of Disappearance)**. This field must be read-only and re-computed if inputs change. |
+| FR-2.3 | The user must upload a minimum of **two (2) photographs**, each tagged with the person's age at the time the photograph was taken. Additional photographs may be uploaded to improve accuracy. |
+| FR-2.4 | The system must validate each uploaded photograph: minimum resolution 224×224 px, maximum file size 10 MB, formats JPEG/PNG only, and must detect exactly one face using InsightFace before accepting. |
+| FR-2.5 | The user may optionally provide identifying marks (scars, moles, birthmarks, tattoos) in a structured free-text field. |
+| FR-2.6 | On successful submission, the system must return a Case Identifier (`KHJ-YYYY-XXXXX`) and send an SMS confirmation to the registered phone number. |
 
-KHOJO operates on the core principle: **"AI suggests, the human decides."**
+> **Rationale for two photographs:** A minimum of two photographs allows the AI to learn the individual's unique aging trajectory between two known ages, then extrapolate forward to the predicted present-day age. This yields measurably higher accuracy than single-photograph aging.
 
-The system ingests one or more historical photographs of a missing person, predicts the present-day appearance using a face-aging Generative Adversarial Network (GAN), and searches a growing database of sighted individuals using age-invariant face recognition. Every decision is accompanied by a confidence score and a plain-language explanation, and no match is considered final until it has been physically verified by an authorised field worker.
+### 6.3 Core AI Processing
 
-A distinctive feature of KHOJO is its **"Not a Match" feedback loop**, which captures the real photograph of any incorrectly matched individual, derives an error vector between the AI prediction and the actual face, and feeds this into a continuous-learning pool. Over time this tunes the generic global model into one that is specifically suited to the Indian subcontinent, without requiring a dedicated training dataset.
+| FR# | Requirement |
+|---|---|
+| FR-3.1 | **Face Detection:** InsightFace (RetinaFace) must detect the primary face bounding box and extract 68 facial landmark key points from each photograph before any further processing. |
+| FR-3.2 | **Face Embedding:** ArcFace (ResNet-50, MS1MV3) must convert each detected face into a 512-dimensional L2-normalised embedding vector stored in the pgvector column of the `photos` table. |
+| FR-3.3 | **Aging Trajectory:** A custom module must compute the per-dimension aging rate vector ∆v by linear interpolation between embeddings of the two or more tagged photographs across their age gap. |
+| FR-3.4 | **Face Aging Generation:** The system must use a SAM or HRFAE GAN to synthesise a realistic aged photograph at the predicted present-day age. GPU required for production; CPU fallback permitted for demonstration only. |
+| FR-3.5 | **Age-Invariant Recognition:** The aged embedding must be compared against every sighting embedding using ArcFace cosine similarity via pgvector's IVFFlat index. Top-K (default K=10) candidates returned. |
+| FR-3.6 | **Confidence Scoring:** Every candidate match must produce a confidence score in the range 0.0 to 1.0 derived from sigmoid-calibrated cosine similarity. |
+| FR-3.7 | **Alert Routing:** ≥80% → immediate push notification to assigned field worker. 60–80% → queued for mandatory human review. <60% → marked inconclusive. |
+| FR-3.8 | **Geo-Spatial Clustering:** GeoPy must geocode all sighting locations. When three or more sightings cluster within a configurable radius (default 5 km), a geo-alert must be raised to the administrator dashboard. |
+| FR-3.9 | **Summary Generation (optional):** When enabled, GPT-4o must generate an investigator case summary and a community alert message. Every GPT-4o invocation must include a deterministic system-prompt version identifier for reproducibility and auditability. |
 
----
+### 6.4 Output and User Experience
 
-## 6. Users and Roles (Actors)
+| FR# | Requirement |
+|---|---|
+| FR-4.1 | The mobile application must present every AI-generated result on a clearly labelled screen showing: original photographs, AI-generated aged photograph, and best candidate match photograph — all displayed side-by-side with labels. |
+| FR-4.2 | Every AI-generated decision must display: a numerical confidence score, a colour-coded confidence bar (green ≥80%, amber 60–80%, red <60%), and a plain-language explanation of how the result was derived. |
+| FR-4.3 | The result screen must classify the outcome into the three tiers from FR-3.7 and display the appropriate system action in human-readable text. |
+| FR-4.4 | A plain-language disclaimer must always appear: *"This is an estimate produced by Artificial Intelligence (AI). Please have the result verified by a certified officer before acting upon it."* |
+| FR-4.5 | All user-facing text must expand AI, ML, API, GAN, OTP, NGO, and every other domain-specific acronym at its first occurrence on each screen. |
 
-| Actor | Description | Key Responsibilities |
-|---|---|---|
-| **Community Member / Family** | An ordinary citizen who has a missing relative or who wishes to report an unknown sighted person. | Registers missing person cases, uploads photographs, views AI-generated results and match status. |
-| **Field Worker** | An NGO representative or police officer operating in the field. | Visits shelter homes, hospitals, and other locations; verifies potential matches physically; uploads photographs of sighted individuals; submits feedback. |
-| **Administrator** | A government officer or senior police official. | Approves or rejects cases; tunes AI thresholds; manages field workers; exports audit logs; monitors overall system health. |
-| **System (AI, Automated)** | No human involvement — fully automated. | Performs face detection, embedding, aging, recognition, scoring, alert routing, and summary generation. |
+### 6.5 Field Worker Verification and Feedback Loop
 
----
+| FR# | Requirement |
+|---|---|
+| FR-5.1 | Field workers must receive in-app push alerts for every high- or medium-confidence match, showing: predicted aged photograph, candidate sighting photograph, location, confidence score, and tier label. |
+| FR-5.2 | After physical verification, the field worker must mark the case as **"Confirm Match"** or **"Not a Match"**. No other outcome is accepted. |
+| FR-5.3 | On "Confirm Match": the system must automatically notify the registered family member with a message composed by GPT-4o (when enabled) or a standard template (when disabled). Case status updated to `matched`. |
+| FR-5.4 | On "Not a Match": the field worker must mandatorily upload the actual photograph of the individual encountered. The system must refuse the submission without this photograph. |
+| FR-5.5 | The backend must then: (1) run InsightFace/ArcFace feature comparison between AI prediction and uploaded real photograph; (2) compute a per-feature error vector covering nose shape, cheekbone structure, jawline, eye spacing, and forehead width; (3) append to `training_pool`; (4) trigger model fine-tune after 50 examples, advancing version (e.g., v1.0 → v2.0); (5) notify family that match was not confirmed and case remains active; (6) automatically reopen the case. |
 
-## 7. Functional Requirements
+### 6.6 Administrator Controls
 
-### 7.1 Input, Registration, and Onboarding
+The administrator console must provide the following **five tabs**:
 
-- **FR-1.1** The mobile application must allow every user to register using name, phone number, and location, and to select their role (Family Member, Community Member, Field Worker, or Administrator).
-- **FR-1.2** Authentication must be performed through a One-Time Password (OTP) sent to the registered mobile number. Administrators must additionally authenticate using a police/government identification number (two-factor authentication).
-- **FR-1.3** The mobile application must confirm successful submission of any case or verification with a clear on-screen acknowledgement and a unique reference identifier in the format **KHJ-YYYY-XXXXX**.
-- **FR-1.4** Input validation must reject malformed or out-of-range data (for example, future years, invalid ages, unreadable images) with a plain-language error message.
-
-### 7.2 Missing Person Case Registration
-
-- **FR-2.1** The user must be able to enter the missing person's name, the year the person went missing, the age at which the person went missing, and the last known location (city or area).
-- **FR-2.2** The system must automatically compute the predicted present-day age using the following formula and display it as a read-only field:
-
-  > **Predicted Present-Day Age = Age at Disappearance + (Current Year − Year of Disappearance)**
-
-  *Example:* If a person went missing in 2009 at the age of 10, the system must display: `10 + (2026 − 2009) = 27 years`.
-
-- **FR-2.3** The user must be required to upload a **minimum of two (2) photographs**, each tagged with the age of the person at the time the photograph was taken. Additional photographs (third, fourth, and beyond) may be uploaded to improve accuracy.
-- **FR-2.4** The user should optionally provide identifying marks (moles, scars, marks near the eye, etc.) in a free-text field.
-
-> **Rationale for requiring two photographs:** A minimum of two photographs allows the AI to learn the individual's unique aging trajectory between the two known ages, and then extrapolate that trajectory forward to the predicted present-day age. This yields measurably higher accuracy than single-photograph age progression.
-
-### 7.3 Core Artificial Intelligence Processing
-
-The backend must implement the following AI capabilities as distinct, independently testable modules:
-
-- **FR-3.1 Face Detection.** Using InsightFace, each uploaded photograph must be analysed to detect a single primary face and mark 68 facial landmark key points.
-- **FR-3.2 Face Embedding.** Using ArcFace, each detected face must be converted into a 512-dimensional numerical embedding (the "face fingerprint").
-- **FR-3.3 Aging Trajectory Calculation.** A custom module must compute the aging trajectory from the set of embeddings, each tagged with the known age.
-- **FR-3.4 Face Aging Generation.** Using a Style-based Age Manipulation (SAM) or High-Resolution Face Age Editing (HRFAE) Generative Adversarial Network (GAN), the system must generate an aged photograph of the person at the predicted present-day age.
-- **FR-3.5 Age-Invariant Recognition.** The aged embedding must be compared against every embedding in the database of sighted/registered individuals using ArcFace cosine similarity.
-- **FR-3.6 Confidence Scoring.** Every match must produce a confidence score in the range 0.0 to 1.0.
-- **FR-3.7 Alert Routing.** Based on configurable thresholds, the system must automatically dispatch a field-worker alert, queue the case for human review, or flag it as inconclusive.
-- **FR-3.8 Geo-Spatial Clustering.** Using GeoPy for geocoding, the system must identify zones where three or more sightings or cases cluster, and raise a geo-alert to the administrator.
-- **FR-3.9 Summary Generation (optional).** When enabled, GPT-4o must generate a concise case summary for investigators and a community-facing alert message. Every GPT-4o invocation must include a deterministic system prompt version identifier so that responses are reproducible and auditable.
-
-### 7.4 Output and User Experience
-
-- **FR-4.1** The mobile application must present every AI-generated result on a clearly labelled screen that shows the original photographs side-by-side with the AI-generated aged photograph.
-- **FR-4.2** Every AI-generated decision must include a visible confidence score (displayed both numerically and as a bar) and a plain-language explanation of how the result was derived.
-- **FR-4.3** The result screen must classify the outcome into one of three tiers:
-
-  | Confidence Score | Tier | System Action |
-  |---|---|---|
-  | ≥ 80% | High confidence | Automatic alert dispatched to the assigned field worker. |
-  | 60% – 80% | Medium confidence | Case queued for mandatory human review. |
-  | < 60% | Low confidence | Marked inconclusive; manual verification required. |
-
-- **FR-4.4** A plain-language disclaimer must always appear on the result screen:
-
-  > *"This is an estimate produced by Artificial Intelligence. Please have the result verified by a certified officer before acting upon it."*
-
-- **FR-4.5** A unique Case Identifier in the format `KHJ-2026-XXXXX` must be generated and displayed on the result screen.
-
-### 7.5 Field Worker Flow — Verification and Feedback
-
-- **FR-5.1** Field workers must receive in-app alerts for potential matches, showing the predicted aged photograph alongside the candidate photograph with location and confidence score.
-- **FR-5.2** After physical verification, the field worker must be able to mark the case as either **"Confirm Match"** or **"Not a Match"**.
-- **FR-5.3** On confirming a match, the system must automatically notify the registered family member using a message composed by GPT-4o (when enabled) or a standard template (when GPT-4o is disabled).
-- **FR-5.4** On marking "Not a Match", the field worker **must mandatorily upload the actual photograph of the individual encountered** at the location. The system must refuse to accept the "Not a Match" submission without this photograph.
-- **FR-5.5** On receiving a "Not a Match" feedback, the backend must:
-  1. Run feature-by-feature comparison between the AI-generated prediction and the uploaded real photograph (nose shape, cheekbone structure, jawline, eye spacing, etc.).
-  2. Compute a per-feature error vector.
-  3. Append the error vector to a training pool for continuous learning.
-  4. Trigger a model fine-tune cycle when the training pool accumulates fifty (50) such examples, advancing the model version (for example, from v1.0 to v2.0).
-  5. Notify the original family member that the match was not confirmed and that the case remains active.
-  6. Automatically reopen the case.
-
-### 7.6 Administrator Controls
-
-The administrator console must provide the following five tabs:
-
-#### 7.6.1 Tab 1 — Overview Dashboard
-- Live counts of total cases, active searches, matches found, and cases pending human review.
-- AI confidence distribution chart with three bars: High (≥80%, green), Medium (60–80%, amber), Low (<60%, red).
+#### Tab 1 — Overview Dashboard
+- Live counts: total cases, active searches, matches found, cases pending human review.
+- AI confidence distribution chart: High (≥80%, green), Medium (60–80%, amber), Low (<60%, red).
 - Real-time recent activity feed.
+- Geo-heatmap layer showing sighting density across states.
 
-#### 7.6.2 Tab 2 — Case Management
-- Filter by status (All / Review Pending / Found / Closed).
-- Each case must display name, Case Identifier, predicted age, match location, and confidence score.
-- Administrators must be able to **Approve** (dispatches field-worker alert) or **Reject** (closes case and notifies family).
+#### Tab 2 — Case Management
+- Filter by status: All / Review Pending / Found / Closed.
+- Each case displays: name, Case Identifier, predicted age, match location, confidence score, assigned field worker.
+- Administrators can **Approve** (dispatch field-worker alert) or **Reject** (close case, notify family).
 
-#### 7.6.3 Tab 3 — Field Worker Management
+#### Tab 3 — Field Worker Management
 - List of all field workers with zone assignment, verification count, and personal accuracy score.
-- Ability to add, reassign, or remove a field worker.
-- Leave-status management.
+- Add, reassign, or remove field workers.
+- Leave-status management with automatic reassignment of open cases.
 
-#### 7.6.4 Tab 4 — AI Settings (No-Code)
-- **Confidence Threshold** slider: 40% to 90% (default 60%).
-- **Auto-Alert Threshold** slider: 60% to 99% (default 80%).
-- **GPT-4o Summaries** toggle: On / Off.
-- **Geo-Clustering Alerts** toggle: On / Off (alert when three or more cases cluster in one zone).
-- Display of the currently deployed AI model version.
+#### Tab 4 — AI Settings (No-Code Threshold Tuning)
 
-#### 7.6.5 Tab 5 — Audit Log
-- Every AI decision must be recorded with timestamp, model version, action taken, confidence score, and outcome.
-- Logs must be tamper-evident — every entry cryptographically signed, and edits or deletions disallowed.
-- CSV export must be available for any selected date range.
-- Personally Identifiable Information (PII) must be redacted from logs, except where retention is legally required.
+| Setting | Type | Default | Range |
+|---|---|---|---|
+| Confidence Review Threshold | Slider | 60% | 40% – 90% |
+| Auto-Alert Threshold | Slider | 80% | 60% – 99% |
+| Geo-Clustering Radius | Numeric | 5 km | 1 – 50 km |
+| Geo-Clustering Minimum Count | Numeric | 3 sightings | 2 – 10 |
+| GPT-4o Summaries | Toggle | On | On / Off |
+| Geo-Clustering Alerts | Toggle | On | On / Off |
+| Active AI Model Version | Read-only | v1.0 | — |
 
----
-
-## 8. User Flows
-
-### 8.1 Community Member Flow
-
-1. **Register / Login** — the user enters name, phone number, and location; selects role; and verifies via OTP.
-2. **Missing Person Details** — the user enters the name, year of disappearance, age at disappearance, and last known location. The system auto-calculates and displays the predicted present-day age.
-3. **Photo Upload** — the user uploads at least two photographs, each tagged with the age of the person at the time of capture. Optionally, identifying marks may be entered.
-4. **AI Processing (automatic)** — the backend performs face detection, embedding, aging, recognition, scoring, and alert routing; all steps are written to the audit log.
-5. **Result** — the user sees original photographs alongside the AI-generated aged photograph, the confidence score, the tier classification, the plain-language disclaimer, and the Case Identifier.
-
-### 8.2 Field Worker Flow — Normal Path (Match Confirmed)
-
-1. An in-app alert arrives, for example: *"Possible match — Surat Shelter Home, 78% confidence."*
-2. The predicted aged photograph and the candidate photograph are displayed side-by-side.
-3. The field worker physically visits the shelter.
-4. On positive verification, the field worker taps **Confirm Match**.
-5. The registered family member receives an automatic notification, composed by GPT-4o when enabled.
-
-### 8.3 Field Worker Flow — Alternate Path ("Not a Match" Feedback Loop)
-
-> *Illustrative scenario:* Anita Ben (field worker) visits a shelter where an 80% match was flagged. The girl at the shelter is clearly not the missing person.
-
-1. The field worker taps **Not a Match**.
-2. The field worker is required to upload the actual photograph of the encountered individual before submission is accepted.
-3. The AI backend now holds two items: the AI-generated predicted face and the actual photograph.
-4. The system performs feature-by-feature comparison and computes an error vector, for example:
-   - Nose shape error: 0.23
-   - Cheekbone error: 0.31
-   - Jawline error: 0.18
-5. The error vector is added to the continuous-learning pool.
-6. After 50 such examples accumulate, the model is fine-tuned and the version advances (for example, v1.0 → v2.0).
-7. The family member is notified that the match was not confirmed and that the case remains active.
-8. The case is automatically reopened.
-
-> **Strategic benefit:** The more the system is used in India, the more accurately it learns South-Asian facial aging characteristics — without requiring a bespoke training dataset. A generic global model gradually becomes an Indian-subcontinent-specific model through deployment itself.
-
-### 8.4 Administrator Flow
-
-1. The administrator logs in to the same mobile or web application and selects the Administrator role.
-2. Two-factor authentication is performed (OTP plus police/government identification number).
-3. The administrator navigates between the five tabs (Overview, Cases, Field Workers, AI Settings, Audit Log) to manage the system, approve or reject cases, tune thresholds without any code deployment, and export audit logs.
+#### Tab 5 — Audit Log
+- Every AI decision recorded: timestamp, model version, action, confidence score, outcome.
+- Entries are cryptographically signed (SHA-256 chained checksum) and append-only — edits and deletions are disallowed.
+- CSV export available for any selected date range.
+- Personally Identifiable Information (PII) is redacted from all entries except where legal retention is required.
 
 ---
 
-## 9. Artificial Intelligence (AI) Pipeline — Technical Summary
+## 7. Non-Functional Requirements
 
-| Step | Operation | Technology |
+| NFR# | Category | Requirement |
 |---|---|---|
-| 1 | Face detection and 68-point landmarking on each input photograph | InsightFace |
-| 2 | Generation of a 512-dimensional face embedding ("face fingerprint") | ArcFace |
-| 3 | Aging trajectory calculation from the set of age-tagged embeddings | Custom module |
-| 4 | Face aging generation at the predicted present-day age | SAM / HRFAE GAN |
-| 5 | Age-invariant face recognition against the database | ArcFace cosine similarity |
-| 6 | Confidence scoring (0.0 to 1.0) | ArcFace |
-| 7 | Automatic alert routing or human-review queuing based on threshold | FastAPI backend |
-| 8 | Case summary and community alert message (when enabled) | GPT-4o |
-| 9 | Persistent audit logging of every decision | PostgreSQL |
+| NFR-1 | Performance | End-to-end primary-user flow must complete in under **5 seconds** for typical input, excluding network latency. Face-aging module alone must produce output within **3 seconds**. |
+| NFR-2 | Stability | Backend must tolerate a representative dataset during a **15-minute demonstration run** without crashes, memory leaks, or exceeding hardware budget. |
+| NFR-3 | Graceful Degradation | When any external API is temporarily unavailable, the flow must degrade gracefully or fail with a user-understandable message. The user must never be left without a response. |
+| NFR-4 | Accessibility | All user-facing text must expand AI, ML, API, GAN, OTP, and every domain-specific acronym at its first occurrence on each screen. |
+| NFR-5 | Reliability | Every external API call must implement retry with exponential backoff (up to 3 retries, base delay 500 ms) and a circuit-breaker (open after 5 consecutive failures, half-open after 30 seconds). |
+| NFR-6 | Security & Privacy | PII redacted from all logs. Audit entries cryptographically signed and tamper-evident. All data in transit uses TLS 1.3. Images stored with AES-256 encryption at rest. |
+| NFR-7 | Scalability | Architecture must support horizontal scaling via Docker Compose replicas. pgvector IVFFlat index must maintain sub-second search at 1,000,000 embeddings. |
+| NFR-8 | Observability | Backend must emit structured JSON logs to stdout. `GET /health` must return service status within 200 ms. Failed containers must restart automatically. |
 
 ---
 
-## 10. Non-Functional Requirements
+## 8. Technology Stack
 
-- **NFR-1 Performance.** The end-to-end primary-user flow must complete in under five (5) seconds for a typical input, excluding network latency to external APIs. The face-aging module alone must produce a measurable, testable output within three (3) seconds on a representative sample input.
-- **NFR-2 Stability.** The backend must tolerate a representative dataset during a fifteen (15) minute demonstration run without crashes, memory leaks, or exceeding the stated hardware budget.
-- **NFR-3 Graceful Degradation.** When any external API is temporarily unavailable, the flow must either degrade gracefully or fail with a user-understandable message. The user must never be left without a response.
-- **NFR-4 Accessibility.** All user-facing text must expand AI, ML, API, and every other domain-specific acronym at its first occurrence on each screen.
-- **NFR-5 Reliability.** Every external API call must implement retry with exponential backoff and a circuit-breaker so that a failing dependency cannot bring down the entire flow.
-- **NFR-6 Security and Privacy.** PII must be redacted from all logs except where legal retention is required. Audit entries must be cryptographically signed and tamper-evident.
-- **NFR-7 Scalability.** The system architecture must support horizontal scaling to handle nation-scale case volumes.
-
----
-
-## 11. Technology Stack
-
-| Layer | Technology | Purpose |
+| Layer | Technology | Notes |
 |---|---|---|
-| Mobile Application | React Native | Cross-platform Android and iOS client |
-| Backend | Python (FastAPI) | API server and business logic |
-| Database | PostgreSQL | Persistence of cases, users, and audit logs |
-| Face Recognition | InsightFace / ArcFace | Detection, landmarking, embedding, recognition (~500 MB) |
-| Face Aging | SAM / HRFAE GAN | Age-progression generation (~1–2 GB) |
-| AI Summaries (optional) | OpenAI GPT-4o API | Case summaries and community alert messages |
-| Geocoding | GeoPy | Location resolution and clustering |
-| Deployment | Docker Compose | Standard entry-point via `docker-compose.prod.yml` |
+| Mobile Application | React Native 0.73+ (Expo) | Single codebase for Android and iOS. Expo Camera for photo capture. |
+| Backend API | Python 3.11 + FastAPI | Async endpoints, Pydantic v2 validation, auto-generated OpenAPI docs. |
+| Task Queue | Celery 5 + Redis 7 | GPU-bound face-aging jobs dispatched asynchronously. Flower UI for monitoring. |
+| Face Detection & Landmarks | InsightFace 0.7 (RetinaFace) | ~500 MB model. Detects face, extracts 68-point landmarks, normalises to 112×112 px. |
+| Face Recognition | ArcFace ResNet-50 (MS1MV3) | Produces 512-d L2-normalised embeddings. Cosine similarity for matching. |
+| Face Aging GAN | SAM / HRFAE (PyTorch 2.x) | ~1–2 GB model. GPU required for production; CPU fallback for demo. |
+| Vector Database | PostgreSQL 15 + pgvector 0.6 | IVFFlat index. ANN search in sub-second at 1M embeddings. |
+| Primary Database | PostgreSQL 15 | Cases, users, audit log, training pool. |
+| Object Storage | MinIO (S3-compatible) | Immutable image storage. Versioning enabled. AES-256 at rest. |
+| Caching / Session | Redis 7 | JWT blacklist, OTP codes, geocode cache, Celery broker. |
+| Geocoding | GeoPy + Nominatim (local) | Local Nominatim instance to avoid rate limits. Cluster detection in Python. |
+| AI Summaries (optional) | OpenAI GPT-4o API | Called only for case summaries. System prompt versioned. Circuit-breaker applied. |
+| Deployment | Docker Compose (`docker-compose.prod.yml`) | Health checks, automatic restart, GPU device mapping. |
+| Push Notifications | Firebase Cloud Messaging (FCM) | Field-worker alerts. Retry with exponential backoff. |
+| API Gateway | Nginx 1.25 | TLS termination, rate limiting, reverse proxy to FastAPI. |
 
 ---
 
-## 12. External Integrations and Data Sources
+## 9. API Endpoint Reference
 
-- **External APIs.** None. All Computer Vision processing is performed locally; only the optional GPT-4o summary generation calls an external API.
-- **Pre-trained models and datasets.**
-  - InsightFace / ArcFace for recognition (~500 MB).
-  - SAM / HRFAE Generative Adversarial Network for face aging (~1–2 GB).
-  - GeoPy for geocoding.
-- **Sample data.** Sample face images at varying ages must be supplied in the repository for testing and demonstration purposes.
-
----
-
-## 13. Audit, Logging, and Compliance
-
-- **AL-1** Every AI-generated decision must be logged with timestamp, input, output, model version, and confidence score.
-- **AL-2** The audit log must be tamper-evident; this is achieved through append-only storage and cryptographic checksums on each entry.
-- **AL-3** PII must be redacted from logs. The only exception is when data retention is legally mandated.
-- **AL-4** The administrator must be able to export the audit log for any selected date range as a Comma-Separated Values (CSV) file.
-- **AL-5** The audit log is the authoritative evidence base for any post-facto investigation into system behaviour.
-
----
-
-## 14. Administrator Controls
-
-Refer to Section 7.6 for the detailed breakdown of the five administrator tabs. In summary, the administrator must be able to:
-
-1. Monitor overall volumes, confidence distribution, and error rates in real time.
-2. Approve or reject individual cases.
-3. Manage field workers and their zone assignments.
-4. Tune AI thresholds (confidence, auto-alert, geo-clustering) without redeploying the backend.
-5. Export the tamper-evident audit log for legal or compliance purposes.
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/auth/register` | None | Register a new user. Returns JWT + refresh token after OTP verification. |
+| `POST` | `/auth/otp/verify` | None | Verify OTP code. Returns short-lived session token. |
+| `POST` | `/cases` | JWT (any role) | Create a new missing person case. Returns KHJ case identifier. |
+| `POST` | `/cases/{id}/photos` | JWT (case owner) | Upload photographs. Returns `photo_id` and embedding status. |
+| `POST` | `/cases/{id}/process` | JWT (case owner) | Trigger AI pipeline asynchronously. Returns `job_id`. |
+| `GET` | `/jobs/{job_id}` | JWT (case owner) | Poll job status and result (confidence score + aged image URL). |
+| `POST` | `/sightings` | JWT (field worker) | Submit a sighting report with photo. Returns `sighting_id`. |
+| `POST` | `/matches/{id}/confirm` | JWT (field worker) | Confirm a match. Triggers family notification. |
+| `POST` | `/matches/{id}/not-a-match` | JWT (field worker) | Submit "Not a Match" with mandatory photo. Triggers error vector computation. |
+| `GET` | `/admin/dashboard` | JWT (admin) | Real-time overview stats. |
+| `GET` | `/admin/cases` | JWT (admin) | Paginated case list with filters. |
+| `PUT` | `/admin/settings` | JWT (admin) | Update AI thresholds (no code deployment required). |
+| `GET` | `/admin/audit-log` | JWT (admin) | Paginated tamper-evident audit log. |
+| `GET` | `/admin/audit-log/export` | JWT (admin) | CSV export of audit log for a date range. |
+| `GET` | `/health` | None | Service health check. Returns `200 OK` with component statuses. |
 
 ---
 
-## 15. Performance and Deployment
+## 10. Security Architecture
 
-- The backend must be deployable via the standard `docker-compose.prod.yml` entry-point shared across the hackathon portal.
-- The deployment must include health checks on each service and must restart any failed container automatically.
-- A Graphics Processing Unit (GPU) is required for the face-aging GAN in production; the recognition pipeline may run on CPU in a fallback mode for demonstration purposes.
+### 10.1 Authentication and Authorisation
+
+- OTP delivered via SMS (Twilio or MSG91). Codes are six-digit, valid for **5 minutes**, rate-limited to **3 attempts per 15 minutes**.
+- Administrators require **2FA**: OTP + hashed government identification number (bcrypt, cost factor 12).
+- JWT tokens (HS256) expire after **24 hours**. Refresh tokens (opaque, stored in Redis) expire after **30 days**.
+- **Role-Based Access Control (RBAC):** `community_member` < `field_worker` < `administrator`. Each API endpoint declares its minimum required role.
+
+### 10.2 Data Privacy
+
+- All biometric embeddings and photographs stored server-side only. **No biometric data transmitted to OpenAI or any external service.**
+- Phone numbers stored as bcrypt hashes (cost 12). Only OTP delivery service receives the plain number, immediately.
+- Government ID numbers stored as bcrypt hashes. Plain numbers are never persisted.
+- Audit log redacts PII fields before writing, unless legal retention applies (configurable per jurisdiction).
+- Images stored in MinIO with AES-256 encryption at rest. Access requires signed S3 URL with **1-hour expiry**.
+
+### 10.3 Tamper-Evident Audit Chain
+
+```
+checksum = SHA-256(
+  row_id || timestamp || action || confidence ||
+  input_hash || output_hash || prev_checksum
+)
+```
+
+Each audit record stores the checksum of itself chained to the previous record's checksum. The admin console verifies the entire chain on every export. Any gap or mismatch is flagged immediately.
 
 ---
 
-## 16. Acceptance Criteria
+## 11. Continuous Learning — "Not a Match" Feedback Loop
 
-| # | Criterion | Pass Condition |
+| Stage | Action | Technical Detail |
 |---|---|---|
-| AC-1 | End-to-end flow | A new user can complete the flow from input to AI-generated result in a single session, without any instructions beyond those visible on the user interface. |
-| AC-2 | Face-aging speed | The face-aging module produces a measurable, testable output on a representative input within three seconds. |
-| AC-3 | Confidence score | Every AI-generated decision is returned with a visible confidence score and a plain-language explanation. |
-| AC-4 | Fallback path | A confidence score below the configurable threshold (default 0.60) triggers the documented fallback path — human review, alternative model, or a graceful "unable to determine" response — and never returns an unvetted answer. |
-| AC-5 | Audit log | Every AI invocation is written to the audit log with timestamp, input, output, model version, and confidence score. |
-| AC-6 | Stability | The backend runs a fifteen-minute demonstration on a representative dataset without crashes, memory leaks, or exceeding the stated hardware budget. |
-| AC-7 | Acronym expansion | All user-facing text expands AI, ML, API, and any other domain-specific acronym at its first occurrence on each screen. |
-| AC-8 | Graceful error handling | When any external API is temporarily unavailable, the flow degrades gracefully or fails with a user-understandable message. |
-| AC-9 | "Not a Match" feedback loop | The field-worker "Not a Match" feedback, including the mandatory photograph upload, updates the training pool and triggers model fine-tuning after fifty samples. |
-| AC-10 | Age formula correctness | The predicted present-day age is computed correctly as `Age at Disappearance + (Current Year − Year of Disappearance)`. |
+| 1 | Field worker submits "Not a Match" + real photo | Photo validated (face detected, min 224×224 px). Stored in MinIO. Record created in `training_pool`. |
+| 2 | Feature extraction | ArcFace extracts embeddings from both the AI-generated prediction and the actual photo. Per-feature landmarks compared using InsightFace 68-point map. |
+| 3 | Error vector computation | ∆ computed per landmark group: nose shape, cheekbone, jawline, eye spacing, forehead width, chin shape. Stored as JSONB in `training_pool.error_vector`. |
+| 4 | Threshold check | `COUNT(training_pool WHERE model_version = current)` checked. If ≥ 50, fine-tune is triggered. |
+| 5 | Model fine-tuning | Celery task dispatches fine-tune job on GAN model using the 50 error vectors as curriculum. Model version incremented (e.g., v1.0 → v2.0). `model_versions` table updated. |
+| 6 | Strategic benefit | Over thousands of "Not a Match" submissions, the generic global GAN adapts to **South Asian facial aging characteristics** without requiring a bespoke dataset. |
+
+> **Key Insight:** The more the system is used in India, the more accurately it learns South-Asian facial aging — without requiring a dedicated training dataset. A generic global model gradually becomes an Indian-subcontinent-specific model through deployment itself.
 
 ---
 
-## 17. Assumptions and Dependencies
+## 12. Acceptance Criteria
 
-- A reliable internet connection is available on the field worker's device at the time of verification.
-- Users have a smartphone capable of running React Native applications.
-- At least two usable photographs of the missing person are available from the family.
-- The deployment host has access to a GPU of sufficient memory for the SAM / HRFAE model.
-- GPT-4o API credits are available when summary generation is enabled.
+| AC# | Criterion | Pass Condition |
+|---|---|---|
+| AC-1 | End-to-end flow | A new user completes input → AI result in a single session without instructions beyond those visible on the UI. |
+| AC-2 | Face-aging speed | Face-aging module produces a measurable, testable output on a representative input within **3 seconds**. |
+| AC-3 | Confidence score display | Every AI-generated decision returns a visible numerical confidence score and a plain-language explanation. |
+| AC-4 | Fallback path | A score below the configurable threshold (default 0.60) triggers the documented fallback path — never an unvetted answer. |
+| AC-5 | Audit log | Every AI invocation is written to the audit log with timestamp, input hash, output hash, model version, and confidence score. |
+| AC-6 | Stability | Backend runs a 15-minute demonstration on a representative dataset without crashes or memory leaks. |
+| AC-7 | Acronym expansion | All user-facing text expands AI, ML, API, GAN, OTP, and every domain-specific acronym at first occurrence on each screen. |
+| AC-8 | Graceful error handling | When any external API is unavailable, the flow degrades gracefully or fails with a user-understandable message. |
+| AC-9 | "Not a Match" feedback loop | Field-worker "Not a Match" submission with mandatory photo updates `training_pool` and triggers fine-tune after 50 samples. |
+| AC-10 | Age formula correctness | Predicted age = Age at Disappearance + (Current Year − Year of Disappearance), computed correctly for any valid input. |
+| AC-11 | 2FA for administrators | Administrator login requires both OTP and government identification number; either alone is rejected. |
+| AC-12 | Tamper-evident audit | Audit log export includes SHA-256 chained checksums; any tampered entry is detectable by admin console verification. |
 
 ---
 
-## 18. Risks and Mitigations
+## 13. Risks and Mitigations
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| False positive matches causing distress to families | Medium | High | Three-tier confidence classification, mandatory field-worker verification, plain-language disclaimer on every result. |
-| Bias in the face-aging GAN towards non-Indian features | High (initially) | Medium | Continuous-learning feedback loop from "Not a Match" submissions progressively tunes the model to the Indian subcontinent. |
-| External OpenAI API outage | Low | Low | GPT-4o summaries are optional; fallback to standard templates when unavailable. |
-| Misuse of PII by unauthorised actors | Low | High | Two-factor authentication for administrators, PII redaction in logs, tamper-evident audit trail. |
-| GPU resource unavailability | Medium | Medium | Demonstration fallback mode on CPU with documented performance expectations. |
+| False positive matches causing distress to families | Medium | High | Three-tier confidence classification, mandatory field-worker physical verification, plain-language disclaimer on every result. |
+| Bias in face-aging GAN towards non-Indian features | High (initially) | Medium | Continuous-learning "Not a Match" feedback loop progressively tunes the model to the Indian subcontinent. |
+| External OpenAI API outage | Low | Low | GPT-4o summaries are optional. Fallback to standard message templates when unavailable. |
+| PII misuse or data breach | Low | High | 2FA for admins, PII redaction in logs, AES-256 at rest, TLS 1.3 in transit, append-only tamper-evident audit chain. |
+| GPU unavailability in demonstration environment | Medium | Medium | CPU fallback mode documented and configured. Performance expectations stated clearly in UI during fallback. |
+| Photo quality insufficient for face detection | Medium | Medium | FR-2.4 validates photo before acceptance. User shown clear error with guidance on retaking the photograph. |
+| Model fine-tuning corrupting production weights | Low | High | Fine-tuning runs on a copy of the model. Production weights replaced only after validation accuracy check passes threshold. |
 
 ---
 
-## 19. Future Enhancements
+## 14. Future Enhancements
 
-- Integration with the Crime and Criminal Tracking Network and Systems (CCTNS) database.
-- Multilingual support including Hindi, Gujarati, Marathi, Tamil, Bengali, and other Indian languages.
+- Integration with the Crime and Criminal Tracking Network and Systems (CCTNS) database for real-time cross-referencing.
+- Multilingual support: Hindi, Gujarati, Marathi, Tamil, Bengali, Telugu, and other Indian languages.
 - Edge deployment on field-worker devices for offline verification in low-connectivity zones.
-- WhatsApp chatbot for case registration by families who do not use smartphone applications.
-- Federated learning across states to improve the model without centralising sensitive data.
+- WhatsApp chatbot for case registration by families without smartphone applications.
+- Federated learning across states to improve the model without centralising sensitive biometric data.
 - Integration with Closed-Circuit Television (CCTV) feeds at railway stations and bus terminals.
+- Aadhaar-linked verification pathway for confirmed identity resolution (subject to regulatory approval).
 
 ---
 
-## 20. Glossary
+## 15. Glossary
 
-| Term | Definition |
+| Term / Acronym | Definition |
 |---|---|
-| **AI (Artificial Intelligence)** | A branch of computer science concerned with building systems that perform tasks that typically require human intelligence. |
-| **API (Application Programming Interface)** | A defined contract that enables two software components to communicate. |
-| **ArcFace** | A face-recognition loss function and model that produces angular-margin embeddings for highly discriminative face recognition. |
-| **Embedding** | A numerical vector representation of data (in this system, a 512-dimensional vector representing a face). |
-| **GAN (Generative Adversarial Network)** | A class of machine-learning framework in which two neural networks compete, used here to generate aged faces. |
-| **GPT-4o** | OpenAI's multimodal (text, image, audio) version of Generative Pre-trained Transformer, version 4 Omni. |
-| **HRFAE (High-Resolution Face Age Editing)** | A published face-aging model capable of producing high-resolution age-progressed images. |
-| **InsightFace** | An open-source face-analysis toolkit used in this system for detection and landmarking. |
-| **PII (Personally Identifiable Information)** | Any data that can identify an individual, directly or indirectly. |
-| **SAM (Style-based Age Manipulation)** | A published face-aging model that manipulates age while preserving identity. In image-segmentation contexts, SAM may instead stand for Segment Anything Model — the meaning is context-dependent. |
+| AI — Artificial Intelligence | A branch of computer science concerned with building systems that perform tasks typically requiring human intelligence. |
+| API — Application Programming Interface | A defined contract enabling two software components to communicate. |
+| ArcFace | A face-recognition loss function and model producing angular-margin embeddings for highly discriminative recognition. |
+| ANN — Approximate Nearest Neighbour | A class of search algorithm that finds the closest vectors in high-dimensional space efficiently. |
+| CSV — Comma-Separated Values | A plain-text file format for tabular data, used here for audit log exports. |
+| 2FA — Two-Factor Authentication | Authentication requiring two independent credentials — used here: OTP + government ID. |
+| FCM — Firebase Cloud Messaging | Google's cross-platform push notification service, used to alert field workers. |
+| GAN — Generative Adversarial Network | A machine-learning framework in which two neural networks compete, used here to generate aged faces. |
+| GPT-4o | OpenAI's multimodal Generative Pre-trained Transformer, version 4 Omni. |
+| HRFAE — High-Resolution Face Age Editing | A published face-aging model capable of producing high-resolution age-progressed images. |
+| InsightFace | An open-source face-analysis toolkit used for detection and landmarking. |
+| IVFFlat | Inverted File with Flat quantisation — a pgvector index type for fast approximate nearest-neighbour search. |
+| JWT — JSON Web Token | A compact, self-contained token used for authentication and authorisation. |
+| MinIO | An S3-compatible open-source object storage system used for image storage. |
+| NCRB — National Crime Records Bureau | The Indian government body that compiles national crime statistics including missing person data. |
+| NGO — Non-Governmental Organisation | A non-profit organisation working independently of government. |
+| OTP — One-Time Password | A six-digit numeric code, valid for 5 minutes, used for mobile authentication. |
+| PII — Personally Identifiable Information | Any data that can identify an individual directly or indirectly. |
+| pgvector | A PostgreSQL extension providing vector data types and similarity search operators. |
+| RBAC — Role-Based Access Control | A security model where access rights are granted based on a user's role. |
+| SAM — Style-based Age Manipulation | A published face-aging model that manipulates age in StyleGAN2 latent space while preserving identity. |
+| TLS — Transport Layer Security | A cryptographic protocol ensuring data privacy and integrity in transit. |
 
 ---
 
-## Closing Principle
-
-> **"AI suggests, the human decides."**
+> *"AI suggests, the human decides."*
 >
 > This principle is the foundation of the entire KHOJO system. Every AI-generated result is a recommendation to a human being, never a final verdict. Every match must be verified physically before a family is informed. Every mistake becomes training data for the next iteration of the model.
 
@@ -448,4 +480,4 @@ Refer to Section 7.6 for the detailed breakdown of the five administrator tabs. 
 
 **— End of Functional Requirements Specification —**
 
-*KHOJO — Amnex Hackathon 2026 | UC34 | FRS v1.0 | 24 April 2026*
+*KHOJO — Amnex Hackathon 2026 | UC34 | FRS v1.1 | 24 April 2026 | Team KHOJO*
